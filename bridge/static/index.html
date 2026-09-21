@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Antigravity Multi-Account Bridge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090d16;
+      --card-bg: rgba(22, 30, 49, 0.7);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --card-hover: rgba(28, 38, 62, 0.9);
+      --primary: #4285F4;
+      --primary-hover: #3367D6;
+      --accent: #00e5ff;
+      --success: #00c853;
+      --warning: #ffab00;
+      --danger: #ff5252;
+      --text: #f0f4f8;
+      --text-muted: #8a99ad;
+      --code-bg: #060910;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(66, 133, 244, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 85% 85%, rgba(0, 229, 255, 0.08) 0%, transparent 45%);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 32px 24px;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--card-border);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .logo-badge {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #4285F4, #9b51e0, #00e5ff);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 22px;
+      color: white;
+      box-shadow: 0 8px 24px rgba(66, 133, 244, 0.35);
+    }
+    h1 {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+    .subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 4px 14px rgba(66, 133, 244, 0.3);
+    }
+    .btn-primary:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: var(--card-border);
+      color: var(--text);
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .btn-danger {
+      background: rgba(255, 82, 82, 0.15);
+      border-color: rgba(255, 82, 82, 0.3);
+      color: var(--danger);
+    }
+    .btn-danger:hover {
+      background: rgba(255, 82, 82, 0.25);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 24px;
+    }
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 20px;
+      backdrop-filter: blur(12px);
+      transition: border-color 0.2s;
+    }
+    .account-card {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .account-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .account-info {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1e88e5, #00acc1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: white;
+    }
+    .account-name {
+      font-size: 15px;
+      font-weight: 600;
+    }
+    .account-email {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .badge-success {
+      background: rgba(0, 200, 83, 0.15);
+      color: var(--success);
+      border: 1px solid rgba(0, 200, 83, 0.3);
+    }
+    .badge-warning {
+      background: rgba(255, 171, 0, 0.15);
+      color: var(--warning);
+      border: 1px solid rgba(255, 171, 0, 0.3);
+    }
+    .badge-danger {
+      background: rgba(255, 82, 82, 0.15);
+      color: var(--danger);
+      border: 1px solid rgba(255, 82, 82, 0.3);
+    }
+    .badge-tier {
+      background: rgba(155, 81, 224, 0.15);
+      color: #bb86fc;
+      border: 1px solid rgba(155, 81, 224, 0.3);
+    }
+    .quota-meters {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 10px;
+      padding: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+    .meter-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .meter-val {
+      color: var(--text);
+      font-weight: 700;
+    }
+    .progress-bar-bg {
+      height: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.4s ease;
+    }
+    .fill-gemini { background: linear-gradient(90deg, #4285F4, #00e5ff); }
+    .fill-3p { background: linear-gradient(90deg, #d97706, #f59e0b); }
+    .account-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      border-top: 1px solid var(--card-border);
+      padding-top: 12px;
+    }
+    .tab-nav {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 8px;
+    }
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+    .tab-btn.active {
+      color: white;
+      background: rgba(255, 255, 255, 0.08);
+    }
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: #9cdcfe;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .chat-box {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .chat-output {
+      height: 180px;
+      background: var(--code-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      overflow-y: auto;
+      color: #e2e8f0;
+    }
+    .chat-input-row {
+      display: flex;
+      gap: 8px;
+    }
+    input, select {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: white;
+      font-size: 13px;
+      outline: none;
+    }
+    input:focus, select:focus {
+      border-color: var(--primary);
+    }
+    input[type="text"] {
+      flex: 1;
+    }
+
+    /* Main Top Navigation */
+    .main-nav {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 12px;
+      overflow-x: auto;
+    }
+    .nav-tab {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .nav-tab:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .nav-tab.active {
+      color: white;
+      background: var(--primary);
+      border-color: var(--primary);
+      box-shadow: 0 4px 14px rgba(66, 133, 244, 0.35);
+    }
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #00e676;
+      box-shadow: 0 0 8px #00e676;
+      animation: pulse 2s infinite;
+      display: inline-block;
+    }
+    .pulse-dot.paused {
+      background: #ffab00;
+      box-shadow: 0 0 8px #ffab00;
+      animation: none;
+    }
+    @keyframes pulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 230, 118, 0.7); }
+      70% { transform: scale(1.1); box-shadow: 0 0 0 6px rgba(0, 230, 118, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 230, 118, 0); }
+    }
+
+    /* Log Monitor Styles */
+    .log-stats-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .log-stat-card {
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 14px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .log-stat-val {
+      font-size: 24px;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .log-stat-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+    }
+    .log-terminal {
+      background: #050811;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      height: 520px;
+      overflow-y: auto;
+      padding: 16px;
+      color: #d1d5db;
+      box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.6);
+      line-height: 1.6;
+    }
+    .log-line {
+      display: flex;
+      gap: 10px;
+      padding: 3px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+      word-break: break-all;
+      align-items: baseline;
+    }
+    .log-line:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+    .log-time {
+      color: #64748b;
+      flex-shrink: 0;
+      font-size: 11px;
+    }
+    .log-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+    .log-badge-info { background: rgba(66, 133, 244, 0.2); color: #8ab4f8; border: 1px solid rgba(66, 133, 244, 0.3); }
+    .log-badge-warning { background: rgba(255, 171, 0, 0.2); color: #ffca28; border: 1px solid rgba(255, 171, 0, 0.3); }
+    .log-badge-error { background: rgba(255, 82, 82, 0.25); color: #ff5252; border: 1px solid rgba(255, 82, 82, 0.4); }
+    .log-badge-debug { background: rgba(148, 163, 184, 0.15); color: #94a3b8; }
+    .log-badge-router { background: rgba(168, 85, 247, 0.2); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
+    .log-src {
+      color: #94a3b8;
+      font-size: 11px;
+      flex-shrink: 0;
+    }
+    .log-msg {
+      flex: 1;
+      color: #f1f5f9;
+    }
+    .log-msg .kw-failover { color: #f472b6; font-weight: 600; }
+    .log-msg .kw-account { color: #38bdf8; }
+    .log-msg .kw-quota { color: #fbbf24; font-weight: 600; }
+    .log-msg .kw-ok { color: #4ade80; }
+    .log-msg .kw-model { color: #a78bfa; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo-badge">AG</div>
+        <div>
+          <h1>Antigravity Multi-Account Bridge</h1>
+          <div class="subtitle">Unified OpenAI & Anthropic API proxy with automatic quota rotation & failover</div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-secondary" onclick="syncAllQuotas()">🔄 Refresh Quotas</button>
+        <button class="btn btn-primary" onclick="startOAuthLogin()">➕ Add Google Account</button>
+      </div>
+    </header>
+
+    <!-- Main Top Navigation -->
+    <nav class="main-nav">
+      <button class="nav-tab active" id="tab-btn-overview" onclick="switchMainTab('overview')">
+        📊 Overview & Accounts
+      </button>
+      <button class="nav-tab" id="tab-btn-logs" onclick="switchMainTab('logs')">
+        📜 Live Log Monitoring
+        <span class="pulse-dot" id="log-live-dot" title="Live stream active"></span>
+      </button>
+      <button class="nav-tab" id="tab-btn-setup" onclick="switchMainTab('setup')">
+        ⚡ 1-Click Agent Setup
+      </button>
+      <button class="nav-tab" id="tab-btn-playground" onclick="switchMainTab('playground')">
+        🧪 Test Playground
+      </button>
+    </nav>
+
+    <!-- Main View: Overview -->
+    <div id="view-overview" class="main-view">
+      <div class="grid">
+      <!-- Left column: Connected Accounts -->
+      <div>
+        <div class="section-title">
+          <span>Connected Google Accounts Pool (<span id="acc-count">0</span>)</span>
+          <span class="badge badge-success">Failover Router Active</span>
+        </div>
+        <div id="accounts-container">
+          <div class="card" style="text-align: center; color: var(--text-muted); padding: 40px;">
+            Loading accounts...
+          </div>
+        </div>
+      </div>
+
+      <!-- Right column: Test Runner & Agent Setup -->
+      <div>
+        <!-- Live Test Console -->
+        <div class="card">
+          <div class="section-title">Test Playground</div>
+          <div class="chat-box">
+            <div style="display: flex; gap: 8px;">
+              <select id="model-select" style="width: 100%;">
+                <option value="gemini-3.8-flash-high">Gemini 3.8 Flash (High)</option>
+                <option value="gemini-3.7-flash-high">Gemini 3.7 Flash (High)</option>
+                <option value="claude-sonnet-4-6">Claude Sonnet 4.6 (Thinking)</option>
+                <option value="claude-opus-4-6-thinking">Claude Opus 4.6 (Thinking)</option>
+                <option value="gpt-oss-120b-medium">GPT-OSS 120B (Medium)</option>
+                <option value="gemini-3.1-pro-low">Gemini 3.1 Pro (Low)</option>
+              </select>
+            </div>
+            <div id="chat-stream" class="chat-output">Click "Test Prompt" to test live streaming and failover...</div>
+            <div class="chat-input-row">
+              <input type="text" id="prompt-input" value="Explain quantum computing in one sentence." />
+              <button class="btn btn-primary" id="btn-send" onclick="sendTestPrompt()">Test Prompt</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 1-Click Agent Auto-Setup -->
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
+            <div>
+              <div class="section-title" style="margin-bottom: 2px;">⚡ 1-Click Agent Setup</div>
+              <div style="font-size: 12px; color: var(--text-muted);">Auto-configure installed coding agents without copying terminal commands</div>
+            </div>
+            <button class="btn btn-primary" style="background: linear-gradient(135deg, #00c853, #00b0ff); border: none;" onclick="autoConfigureAgent('all')">
+              ⚡ Configure All Detected Agents
+            </button>
+          </div>
+
+          <div id="setup-feedback" style="display: none; padding: 10px 14px; border-radius: 8px; margin-bottom: 14px; font-size: 13px;"></div>
+
+          <div id="agent-setup-list" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px;">
+            <div style="color: var(--text-muted); font-size: 13px;">Scanning system for installed agents...</div>
+          </div>
+
+          <details style="margin-top: 14px; border-top: 1px solid var(--card-border); padding-top: 12px;">
+            <summary style="font-size: 12px; color: var(--text-muted); cursor: pointer; user-select: none;">
+              Manual Configuration & Shell Export Commands (Optional)
+            </summary>
+            <div class="tab-nav" style="margin-top: 12px;">
+              <button class="tab-btn active" onclick="showTab('hermes')">Hermes</button>
+              <button class="tab-btn" onclick="showTab('claude')">Claude Code</button>
+              <button class="tab-btn" onclick="showTab('cursor')">Cursor</button>
+              <button class="tab-btn" onclick="showTab('codex')">Codex / Aider</button>
+            </div>
+
+            <div id="tab-hermes" class="tab-content">
+              <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Run Hermes with OpenAI endpoint:</p>
+              <pre id="code-hermes">export OPENAI_BASE_URL="http://localhost:8090/v1"
+export OPENAI_API_KEY="antigravity"
+hermes chat --model gemini-3.8-flash-high</pre>
+            </div>
+
+            <div id="tab-claude" class="tab-content" style="display: none;">
+              <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Route Claude Code CLI directly to bridge:</p>
+              <pre id="code-claude">export ANTHROPIC_BASE_URL="http://localhost:8090"
+export ANTHROPIC_API_KEY="antigravity"
+claude</pre>
+            </div>
+
+            <div id="tab-cursor" class="tab-content" style="display: none;">
+              <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Cursor Settings -> Models (or click ⚡ Setup Now above):</p>
+              <pre id="code-cursor">OpenAI API Key: antigravity
+Override OpenAI Base URL: http://localhost:8090/v1
+Custom Models: claude-sonnet-4-6, gemini-3.8-flash-high</pre>
+            </div>
+
+            <div id="tab-codex" class="tab-content" style="display: none;">
+              <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Setup Codex, Aider or Continue:</p>
+              <pre id="code-codex">export OPENAI_BASE_URL="http://localhost:8090/v1"
+export OPENAI_API_KEY="antigravity"
+aider --model openai/gemini-3.8-flash-high</pre>
+            </div>
+          </details>
+        </div>
+      </div>
+    </div>
+
+      <!-- Quick Activity Preview Card on Overview page -->
+      <div class="card" style="margin-top: 10px; padding: 16px 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span class="pulse-dot"></span>
+            <span style="font-size: 14px; font-weight: 600;">Live Traffic & Activity Stream</span>
+          </div>
+          <button class="btn btn-secondary" style="padding: 6px 14px; font-size: 12px;" onclick="switchMainTab('logs')">
+            Open Full Log Monitor ➔
+          </button>
+        </div>
+        <div id="quick-log-feed" style="font-family: 'JetBrains Mono', monospace; font-size: 12px; max-height: 120px; overflow-y: hidden; color: #94a3b8; display: flex; flex-direction: column; gap: 4px;">
+          <div>Connecting to bridge log stream...</div>
+        </div>
+      </div>
+    </div><!-- End #view-overview -->
+
+    <!-- Main View: Log Monitoring -->
+    <div id="view-logs" class="main-view" style="display: none;">
+      <!-- Stats KPI Bar -->
+      <div class="log-stats-bar">
+        <div class="log-stat-card">
+          <span class="log-stat-label">Total Events</span>
+          <span class="log-stat-val" id="stat-total" style="color: #60a5fa;">0</span>
+        </div>
+        <div class="log-stat-card">
+          <span class="log-stat-label">Agent Requests</span>
+          <span class="log-stat-val" id="stat-requests" style="color: #34d399;">0</span>
+        </div>
+        <div class="log-stat-card">
+          <span class="log-stat-label">Quota Failovers</span>
+          <span class="log-stat-val" id="stat-failovers" style="color: #c084fc;">0</span>
+        </div>
+        <div class="log-stat-card">
+          <span class="log-stat-label">Warnings</span>
+          <span class="log-stat-val" id="stat-warnings" style="color: #fbbf24;">0</span>
+        </div>
+        <div class="log-stat-card">
+          <span class="log-stat-label">Errors</span>
+          <span class="log-stat-val" id="stat-errors" style="color: #f87171;">0</span>
+        </div>
+      </div>
+
+      <!-- Main Log Terminal Card -->
+      <div class="card" style="padding: 20px;">
+        <!-- Controls Toolbar -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 6px; background: rgba(0,0,0,0.3); padding: 6px 12px; border-radius: 6px; border: 1px solid var(--card-border);">
+              <span class="pulse-dot" id="stream-status-dot"></span>
+              <span id="stream-status-text" style="font-size: 12px; font-weight: 600; color: #34d399;">LIVE STREAMING</span>
+            </div>
+            <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;" id="btn-toggle-stream" onclick="toggleStream()">
+              ⏸ Pause
+            </button>
+            <label style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-muted); cursor: pointer; user-select: none;">
+              <input type="checkbox" id="autoscroll-chk" checked /> Auto-scroll
+            </label>
+          </div>
+
+          <!-- Filters and Actions -->
+          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <select id="log-level-filter" onchange="filterLogs()" style="padding: 6px 10px; font-size: 12px;">
+              <option value="ALL">All Levels</option>
+              <option value="INFO">INFO only</option>
+              <option value="WARNING">WARNING only</option>
+              <option value="ERROR">ERROR only</option>
+            </select>
+            <input type="text" id="log-search-input" placeholder="Search logs (e.g. quota, hermes, failover)..." oninput="filterLogs()" style="padding: 6px 12px; font-size: 12px; width: 220px;" />
+            <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;" onclick="loadLogsFromApi()" title="Refresh Logs">
+              🔄 Refresh
+            </button>
+            <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;" onclick="downloadLogFile()" title="Download .log file">
+              ⬇ Download
+            </button>
+            <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;" onclick="clearLogsOnServer()" title="Clear all logs">
+              🧹 Clear
+            </button>
+          </div>
+        </div>
+
+        <!-- Terminal Output -->
+        <div id="log-terminal" class="log-terminal">
+          <div style="color: #64748b; text-align: center; padding-top: 40px;">Connecting to bridge log stream...</div>
+        </div>
+      </div>
+    </div><!-- End #view-logs -->
+  </div>
+
+  <script>
+    function showTab(name) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+      document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+      document.getElementById('tab-' + name).style.display = 'block';
+    }
+
+    function startOAuthLogin() {
+      window.location.href = '/auth/login';
+    }
+
+    async function syncAllQuotas() {
+      try {
+        await fetch('/api/quotas/sync', { method: 'POST' });
+        loadAccounts();
+        loadModels();
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    async function removeAccount(email) {
+      if (!confirm(`Are you sure you want to remove ${email}?`)) return;
+      try {
+        await fetch(`/api/accounts/${encodeURIComponent(email)}`, { method: 'DELETE' });
+        loadAccounts();
+      } catch (e) {
+        alert('Error removing account: ' + e);
+      }
+    }
+
+    async function toggleAccount(email, enabled) {
+      try {
+        await fetch(`/api/accounts/${encodeURIComponent(email)}/toggle`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ enabled })
+        });
+        loadAccounts();
+      } catch (e) {
+        alert('Error toggling account: ' + e);
+      }
+    }
+
+    function renderAccounts(accounts) {
+      const container = document.getElementById('accounts-container');
+      document.getElementById('acc-count').innerText = accounts.length;
+
+      if (!accounts || accounts.length === 0) {
+        container.innerHTML = `
+          <div class="card" style="text-align: center; color: var(--text-muted); padding: 40px;">
+            <p>No Google accounts configured yet.</p>
+            <button class="btn btn-primary" style="margin-top: 16px;" onclick="startOAuthLogin()">Add First Account</button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = accounts.map(acc => {
+        const initials = (acc.name || acc.email).substring(0, 2).toUpperCase();
+        const isExhausted = acc.status === 'exhausted';
+        
+        let statusBadge = '<span class="badge badge-success">Active</span>';
+        if (isExhausted) {
+          statusBadge = '<span class="badge badge-danger">Quota Depleted</span>';
+        } else if (!acc.enabled) {
+          statusBadge = '<span class="badge badge-warning">Disabled</span>';
+        }
+
+        // Calculate fractions
+        let geminiFraction = 1.0;
+        let p3Fraction = 1.0;
+        let geminiReset = '';
+        let p3Reset = '';
+
+        if (acc.quota_summary && acc.quota_summary.groups) {
+          acc.quota_summary.groups.forEach(g => {
+            const name = (g.displayName || '').toLowerCase();
+            if (name.includes('gemini')) {
+              (g.buckets || []).forEach(b => {
+                if (!b.disabled && b.remainingFraction !== undefined) {
+                  geminiFraction = Math.min(geminiFraction, b.remainingFraction);
+                  if (b.resetTime) geminiReset = b.resetTime;
+                }
+              });
+            } else if (name.includes('claude') || name.includes('gpt')) {
+              (g.buckets || []).forEach(b => {
+                if (!b.disabled && b.remainingFraction !== undefined) {
+                  p3Fraction = Math.min(p3Fraction, b.remainingFraction);
+                  if (b.resetTime) p3Reset = b.resetTime;
+                }
+              });
+            }
+          });
+        }
+
+        const geminiPct = Math.round(geminiFraction * 100);
+        const p3Pct = Math.round(p3Fraction * 100);
+
+        return `
+          <div class="card account-card">
+            <div class="account-header">
+              <div class="account-info">
+                <div class="avatar">${initials}</div>
+                <div>
+                  <div class="account-name">${acc.name || acc.email}</div>
+                  <div class="account-email">${acc.email}</div>
+                </div>
+              </div>
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <span class="badge badge-tier">${acc.tier || 'Antigravity'}</span>
+                ${statusBadge}
+              </div>
+            </div>
+
+            <div class="quota-meters">
+              <div>
+                <div class="meter-title">
+                  <span>Gemini Models</span>
+                  <span class="meter-val">${geminiPct}%</span>
+                </div>
+                <div class="progress-bar-bg">
+                  <div class="progress-bar-fill fill-gemini" style="width: ${geminiPct}%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="meter-title">
+                  <span>Claude & GPT (3P)</span>
+                  <span class="meter-val">${p3Pct}%</span>
+                </div>
+                <div class="progress-bar-bg">
+                  <div class="progress-bar-fill fill-3p" style="width: ${p3Pct}%"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="account-footer">
+              <span>Last used: ${acc.last_used ? new Date(acc.last_used * 1000).toLocaleTimeString() : 'Never'}</span>
+              <div style="display: flex; gap: 8px;">
+                <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 11px;" onclick="toggleAccount('${acc.email}', ${!acc.enabled})">
+                  ${acc.enabled ? 'Pause' : 'Resume'}
+                </button>
+                <button class="btn btn-danger" style="padding: 4px 10px; font-size: 11px;" onclick="removeAccount('${acc.email}')">
+                  Remove
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function loadAccounts() {
+      try {
+        const res = await fetch('/api/accounts');
+        const data = await res.json();
+        renderAccounts(data.accounts || []);
+      } catch (e) {
+        console.error('Failed to load accounts:', e);
+      }
+    }
+
+    async function loadModels() {
+      try {
+        const res = await fetch('/api/models');
+        const data = await res.json();
+        const select = document.getElementById('model-select');
+        if (!select || !data.models || !data.models.length) return;
+        const currentVal = select.value;
+        select.innerHTML = data.models.map(m => {
+          const label = m.name ? `${m.name}` : m.id;
+          return `<option value="${m.id}">${label}</option>`;
+        }).join('');
+        if (currentVal && Array.from(select.options).some(o => o.value === currentVal)) {
+          select.value = currentVal;
+        }
+      } catch (e) {
+        console.error('Failed to load dynamic models:', e);
+      }
+    }
+
+    async function sendTestPrompt() {
+      const output = document.getElementById('chat-stream');
+      const btn = document.getElementById('btn-send');
+      const prompt = document.getElementById('prompt-input').value;
+      const model = document.getElementById('model-select').value;
+
+      output.innerText = 'Connecting to bridge...\n';
+      btn.disabled = true;
+
+      try {
+        const response = await fetch('/v1/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: model,
+            messages: [{ role: 'user', content: prompt }],
+            stream: true
+          })
+        });
+
+        if (!response.ok) {
+          const err = await response.text();
+          output.innerText = `Error: ${response.status} ${err}`;
+          btn.disabled = false;
+          return;
+        }
+
+        output.innerText = '';
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop();
+
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              const dataStr = line.substring(6).trim();
+              if (dataStr === '[DONE]') continue;
+              try {
+                const json = JSON.parse(dataStr);
+                const delta = json.choices[0]?.delta?.content || '';
+                output.innerText += delta;
+                output.scrollTop = output.scrollHeight;
+              } catch (e) {}
+            }
+          }
+        }
+      } catch (e) {
+        output.innerText += '\nError: ' + e;
+      } finally {
+        btn.disabled = false;
+        loadAccounts(); // Refresh quotas after turn
+      }
+    }
+
+    async function loadAgentSetup() {
+      try {
+        const res = await fetch('/api/setup/agents');
+        const data = await res.json();
+        const container = document.getElementById('agent-setup-list');
+        if (!container) return;
+
+        let html = '';
+        const agents = data.agents || {};
+
+        for (const [key, item] of Object.entries(agents)) {
+          const isConfigured = item.configured;
+          const isDetected = item.detected;
+
+          let badge = '';
+          if (isConfigured) {
+            badge = `<span class="badge" style="background: rgba(0, 230, 118, 0.15); color: #00e676; border: 1px solid rgba(0, 230, 118, 0.3);">✓ Active on Port</span>`;
+          } else if (isDetected) {
+            badge = `<span class="badge" style="background: rgba(255, 171, 0, 0.15); color: #ffab00; border: 1px solid rgba(255, 171, 0, 0.3);">Detected</span>`;
+          } else {
+            badge = `<span class="badge" style="background: rgba(255, 255, 255, 0.05); color: var(--text-muted); border: 1px solid var(--card-border);">Not Found</span>`;
+          }
+
+          const btnText = isConfigured ? '✓ Apply / Switch' : '⚡ Setup Now';
+          const btnClass = isConfigured ? 'btn-secondary' : 'btn-primary';
+
+          const curModel = (item.current_model || '').toLowerCase();
+          let modelControl = '';
+          if (key !== 'env') {
+            modelControl = `
+              <div style="display: flex; align-items: center; gap: 8px; margin-top: 6px; flex-wrap: wrap;">
+                <span style="font-size: 11px; color: var(--text-muted); font-weight: 500;">Active Model:</span>
+                <select id="model-select-${key}" style="background: rgba(20, 20, 30, 0.8); color: #f0f0f5; border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 6px; padding: 4px 8px; font-size: 11px; outline: none;">
+                  <option value="gemini-3.8-flash-high" ${curModel.includes('3.8-flash') || curModel.includes('haiku') ? 'selected' : ''}>⚡ Gemini 3.8 Flash (High) - Fast & 1M Ctx</option>
+                  <option value="gemini-3.1-pro-low" ${curModel.includes('pro') ? 'selected' : ''}>🧠 Gemini 3.1 Pro (Low) - Deep Reasoning & 2M Ctx</option>
+                  <option value="claude-sonnet-4-6" ${curModel.includes('sonnet') ? 'selected' : ''}>🎭 Claude Sonnet 4.6 (Thinking)</option>
+                  <option value="claude-opus-4-6-thinking" ${curModel.includes('opus') ? 'selected' : ''}>👑 Claude Opus 4.6 (Thinking)</option>
+                  <option value="gpt-oss-120b-medium" ${curModel.includes('oss') ? 'selected' : ''}>🤖 GPT-OSS 120B (Medium)</option>
+                </select>
+              </div>
+            `;
+          }
+
+          let claudeTip = '';
+          if (key === 'claude') {
+            claudeTip = `
+              <div style="font-size: 11px; color: #8ab4f8; margin-top: 8px; padding: 6px 10px; background: rgba(66, 133, 244, 0.1); border-radius: 6px; line-height: 1.4;">
+                💬 <b>Switch Model via Claude CLI:</b> Inside Claude Code, switch anytime using <code>/model</code>:
+                <br>• <code>/model haiku</code> → <b>Gemini 3.8 Flash</b> (Native Claude UX, zero warnings)
+                <br>• <code>/model sonnet</code> → <b>Claude Sonnet 4.6</b>
+                <br>• <code>/model opus</code> → <b>Claude Opus 4.6 Thinking</b>
+                <br>• <code>/model gemini-pro</code> → <b>Gemini 3.1 Pro</b>
+              </div>
+            `;
+          }
+
+          html += `
+            <div style="display: flex; flex-direction: column; background: rgba(0,0,0,0.25); border: 1px solid var(--card-border); padding: 12px 14px; border-radius: 8px; gap: 8px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                <div style="display: flex; flex-direction: column; gap: 3px;">
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-weight: 600; font-size: 14px;">${item.name}</span>
+                    ${badge}
+                  </div>
+                  <div style="font-size: 11px; color: var(--text-muted); font-family: monospace;">${item.path || item.description}</div>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <button class="btn ${btnClass}" style="padding: 6px 14px; font-size: 12px;" onclick="autoConfigureAgent('${key}', document.getElementById('model-select-${key}') ? document.getElementById('model-select-${key}').value : undefined)">
+                    ${btnText}
+                  </button>
+                </div>
+              </div>
+              ${modelControl}
+              ${claudeTip}
+            </div>
+          `;
+        }
+
+        container.innerHTML = html;
+      } catch (e) {
+        console.error('Failed to load agent setup status:', e);
+      }
+    }
+
+    async function autoConfigureAgent(target, model) {
+      const fb = document.getElementById('setup-feedback');
+      try {
+        if (fb) {
+          fb.style.display = 'block';
+          fb.style.background = 'rgba(66, 133, 244, 0.15)';
+          fb.style.border = '1px solid rgba(66, 133, 244, 0.3)';
+          fb.style.color = '#8ab4f8';
+          fb.innerText = `Configuring ${target}${model ? ' with model ' + model : ''}...`;
+        }
+        const bodyPayload = { target: target };
+        if (model) bodyPayload.model = model;
+
+        const res = await fetch('/api/setup/configure', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(bodyPayload)
+        });
+        const data = await res.json();
+        if (fb) {
+          fb.style.background = 'rgba(0, 230, 118, 0.15)';
+          fb.style.border = '1px solid rgba(0, 230, 118, 0.3)';
+          fb.style.color = '#00e676';
+          const modelMsg = model ? ` (Model: ${model})` : '';
+          fb.innerText = `✓ Successfully configured ${target}${modelMsg}! Connected to Antigravity Bridge.`;
+          setTimeout(() => { fb.style.display = 'none'; }, 6000);
+        }
+        loadAgentSetup();
+      } catch (e) {
+        if (fb) {
+          fb.style.background = 'rgba(255, 82, 82, 0.15)';
+          fb.style.border = '1px solid rgba(255, 82, 82, 0.3)';
+          fb.style.color = '#ff5252';
+          fb.innerText = `Error configuring ${target}: ` + e;
+        }
+      }
+    }
+
+    // --- Main Tab Navigation ---
+    function switchMainTab(name) {
+      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+      const activeBtn = document.getElementById('tab-btn-' + name);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      const overviewView = document.getElementById('view-overview');
+      const logsView = document.getElementById('view-logs');
+
+      if (name === 'logs') {
+        overviewView.style.display = 'none';
+        logsView.style.display = 'block';
+        if (window.allLogs.length === 0) {
+          loadLogsFromApi();
+        }
+        scrollLogToBottom();
+      } else {
+        logsView.style.display = 'none';
+        overviewView.style.display = 'block';
+        if (name === 'setup') {
+          document.getElementById('agent-setup-list')?.scrollIntoView({ behavior: 'smooth' });
+        } else if (name === 'playground') {
+          document.getElementById('chat-stream')?.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+    }
+
+    // --- Log Monitoring Logic ---
+    window.allLogs = [];
+    let logEventSource = null;
+    let isStreamPaused = false;
+
+    function formatLogMsg(text) {
+      if (!text) return '';
+      let s = String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      s = s.replace(/(Quota reached|failover|failing over|RESOURCE_EXHAUSTED)/gi, '<span class="kw-failover">$1</span>');
+      s = s.replace(/([\w\.-]+@[\w\.-]+\.\w+)/g, '<span class="kw-account">$1</span>');
+      s = s.replace(/(quota:?\s*[\d\.]+%?)/gi, '<span class="kw-quota">$1</span>');
+      s = s.replace(/(HTTP \d{3}|200 OK|\[SUCCESS\])/g, '<span class="kw-ok">$1</span>');
+      s = s.replace(/(gemini-[\w\.-]+|claude-[\w\.-]+|gpt-[\w\.-]+)/g, '<span class="kw-model">$1</span>');
+      return s;
+    }
+
+    function createLogLineElement(entry) {
+      const line = document.createElement('div');
+      line.className = 'log-line';
+      
+      const lvl = (entry.level || 'INFO').toUpperCase();
+      let badgeClass = 'log-badge-info';
+      if (lvl === 'WARNING') badgeClass = 'log-badge-warning';
+      else if (lvl === 'ERROR' || lvl === 'CRITICAL') badgeClass = 'log-badge-error';
+      else if (lvl === 'DEBUG') badgeClass = 'log-badge-debug';
+      else if (entry.logger && entry.logger.includes('quota_router')) badgeClass = 'log-badge-router';
+
+      const timeStr = entry.timestamp ? (entry.timestamp.split(' ')[1] || entry.timestamp) : '';
+      const srcStr = entry.logger ? entry.logger.replace('antigravity-bridge.', '') : '';
+
+      line.innerHTML = `
+        <span class="log-time">${timeStr}</span>
+        <span class="log-badge ${badgeClass}">${lvl}</span>
+        <span class="log-src">[${srcStr}]</span>
+        <span class="log-msg">${formatLogMsg(entry.message)}</span>
+      `;
+      return line;
+    }
+
+    function updateLogStats() {
+      const total = window.allLogs.length;
+      let errors = 0, warnings = 0, failovers = 0, requests = 0;
+
+      for (const e of window.allLogs) {
+        const lvl = (e.level || '').toUpperCase();
+        if (lvl === 'ERROR' || lvl === 'CRITICAL') errors++;
+        else if (lvl === 'WARNING') warnings++;
+
+        const msg = (e.message || '').toLowerCase();
+        if (msg.includes('failover') || msg.includes('quota reached') || msg.includes('failing over')) failovers++;
+        if (msg.includes('http request') || msg.includes('routing request') || msg.includes('/v1/')) requests++;
+      }
+
+      const elTotal = document.getElementById('stat-total');
+      if (elTotal) elTotal.innerText = total;
+      const elErr = document.getElementById('stat-errors');
+      if (elErr) elErr.innerText = errors;
+      const elWarn = document.getElementById('stat-warnings');
+      if (elWarn) elWarn.innerText = warnings;
+      const elFail = document.getElementById('stat-failovers');
+      if (elFail) elFail.innerText = failovers;
+      const elReq = document.getElementById('stat-requests');
+      if (elReq) elReq.innerText = requests;
+    }
+
+    function scrollLogToBottom() {
+      const chk = document.getElementById('autoscroll-chk');
+      if (chk && chk.checked) {
+        const term = document.getElementById('log-terminal');
+        if (term) term.scrollTop = term.scrollHeight;
+      }
+    }
+
+    function updateQuickFeed(entry) {
+      const qf = document.getElementById('quick-log-feed');
+      if (!qf) return;
+      if (qf.innerText.includes('Connecting')) qf.innerHTML = '';
+      const line = createLogLineElement(entry);
+      qf.appendChild(line);
+      while (qf.children.length > 5) {
+        qf.removeChild(qf.firstChild);
+      }
+    }
+
+    function filterLogs() {
+      const levelFilter = document.getElementById('log-level-filter')?.value || 'ALL';
+      const searchFilter = (document.getElementById('log-search-input')?.value || '').toLowerCase();
+      const term = document.getElementById('log-terminal');
+      if (!term) return;
+
+      term.innerHTML = '';
+      const filtered = window.allLogs.filter(e => {
+        if (levelFilter !== 'ALL' && (e.level || '').toUpperCase() !== levelFilter) return false;
+        if (searchFilter) {
+          const matchMsg = (e.message || '').toLowerCase().includes(searchFilter);
+          const matchSrc = (e.logger || '').toLowerCase().includes(searchFilter);
+          if (!matchMsg && !matchSrc) return false;
+        }
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        term.innerHTML = '<div style="color: #64748b; text-align: center; padding-top: 40px;">No logs match current filters.</div>';
+        return;
+      }
+
+      const fragment = document.createDocumentFragment();
+      for (const e of filtered.slice(-500)) {
+        fragment.appendChild(createLogLineElement(e));
+      }
+      term.appendChild(fragment);
+      scrollLogToBottom();
+    }
+
+    async function loadLogsFromApi() {
+      try {
+        const res = await fetch('/api/logs?limit=300');
+        const data = await res.json();
+        if (data && data.logs) {
+          window.allLogs = data.logs;
+          updateLogStats();
+          filterLogs();
+          for (const e of data.logs.slice(-5)) {
+            updateQuickFeed(e);
+          }
+        }
+      } catch (e) {
+        console.error('Failed to load logs:', e);
+      }
+    }
+
+    function toggleStream() {
+      isStreamPaused = !isStreamPaused;
+      const btn = document.getElementById('btn-toggle-stream');
+      const dot = document.getElementById('stream-status-dot');
+      const txt = document.getElementById('stream-status-text');
+      const topDot = document.getElementById('log-live-dot');
+
+      if (isStreamPaused) {
+        btn.innerText = '▶ Resume';
+        txt.innerText = 'STREAM PAUSED';
+        txt.style.color = '#ffab00';
+        dot.className = 'pulse-dot paused';
+        if (topDot) topDot.className = 'pulse-dot paused';
+      } else {
+        btn.innerText = '⏸ Pause';
+        txt.innerText = 'LIVE STREAMING';
+        txt.style.color = '#34d399';
+        dot.className = 'pulse-dot';
+        if (topDot) topDot.className = 'pulse-dot';
+      }
+    }
+
+    function initLogStream() {
+      if (logEventSource) {
+        try { logEventSource.close(); } catch(e) {}
+      }
+      logEventSource = new EventSource('/api/logs/stream');
+
+      logEventSource.onopen = () => {
+        const term = document.getElementById('log-terminal');
+        if (term && term.innerText.includes('Connecting')) {
+          term.innerHTML = '';
+        }
+      };
+
+      logEventSource.onmessage = (ev) => {
+        if (!ev.data) return;
+        try {
+          const entry = JSON.parse(ev.data);
+          window.allLogs.push(entry);
+          if (window.allLogs.length > 2000) window.allLogs.shift();
+          updateLogStats();
+          updateQuickFeed(entry);
+
+          if (!isStreamPaused) {
+            const levelFilter = document.getElementById('log-level-filter')?.value || 'ALL';
+            const searchFilter = (document.getElementById('log-search-input')?.value || '').toLowerCase();
+            
+            let pass = true;
+            if (levelFilter !== 'ALL' && (entry.level || '').toUpperCase() !== levelFilter) pass = false;
+            if (searchFilter && !(entry.message || '').toLowerCase().includes(searchFilter) && !(entry.logger || '').toLowerCase().includes(searchFilter)) pass = false;
+
+            if (pass) {
+              const term = document.getElementById('log-terminal');
+              if (term) {
+                term.appendChild(createLogLineElement(entry));
+                scrollLogToBottom();
+              }
+            }
+          }
+        } catch (e) {}
+      };
+
+      logEventSource.onerror = () => {
+        setTimeout(() => {
+          if (!isStreamPaused) initLogStream();
+        }, 5000);
+      };
+    }
+
+    async function clearLogsOnServer() {
+      if (!confirm('Are you sure you want to clear all bridge logs?')) return;
+      try {
+        await fetch('/api/logs', { method: 'DELETE' });
+        window.allLogs = [];
+        updateLogStats();
+        const term = document.getElementById('log-terminal');
+        if (term) term.innerHTML = '<div style="color: #64748b; text-align: center; padding-top: 40px;">Logs cleared. Waiting for new events...</div>';
+        const qf = document.getElementById('quick-log-feed');
+        if (qf) qf.innerHTML = '<div>Logs cleared.</div>';
+      } catch (e) {
+        alert('Failed to clear logs: ' + e);
+      }
+    }
+
+    function downloadLogFile() {
+      window.location.href = '/api/logs/download';
+    }
+
+    // Auto-refresh accounts, models, agent statuses, and init log monitor
+    loadAccounts();
+    loadModels();
+    loadAgentSetup();
+    loadLogsFromApi();
+    initLogStream();
+    setInterval(loadAccounts, 30000);
+  </script>
+</body>
+</html>

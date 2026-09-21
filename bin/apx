@@ -1,0 +1,18 @@
+#!/usr/bin/env sh
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+BRIDGE_PY="$SCRIPT_DIR/../bridge.py"
+
+if [ -n "$LOCALAPPDATA" ] && [ -f "$LOCALAPPDATA/Python/pythoncore-3.14-64/python.exe" ]; then
+    PY="$LOCALAPPDATA/Python/pythoncore-3.14-64/python.exe"
+elif [ -n "$LOCALAPPDATA" ] && [ -f "$LOCALAPPDATA/Python/bin/python.exe" ]; then
+    PY="$LOCALAPPDATA/Python/bin/python.exe"
+elif command -v python3 >/dev/null 2>&1; then
+    PY="python3"
+elif command -v python >/dev/null 2>&1; then
+    PY="python"
+else
+    echo "[ERROR] Python 3 was not found on PATH." >&2
+    exit 1
+fi
+
+exec "$PY" "$BRIDGE_PY" "$@"
