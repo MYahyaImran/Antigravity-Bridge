@@ -32,7 +32,7 @@ fi
 
 if command -v python3 >/dev/null 2>&1; then
     echo "[INFO] Installing via python3 pip..."
-    python3 -m pip install --upgrade "git+${REPO_URL}.git"
+    python3 -m pip install --upgrade --force-reinstall --no-cache-dir "git+${REPO_URL}.git"
     echo "[SUCCESS] Installed apx successfully via pip!"
     echo "Run 'apx start -d' to start the server."
     exit 0

@@ -43,14 +43,16 @@ $hasGit = [bool](Get-Command "git" -ErrorAction SilentlyContinue)
 
 if ($hasGit) {
     Write-Host "[INFO] Git detected. Installing package directly from repository..." -ForegroundColor Yellow
-    & $PythonExe -m pip install --upgrade "git+$REPO_URL.git"
+    & $PythonExe -m pip install --upgrade --force-reinstall --no-cache-dir "git+$REPO_URL.git"
 } else {
     Write-Host "[INFO] Git not found. Downloading repository archive directly..." -ForegroundColor Yellow
-    $zipUrl = "$REPO_URL/archive/refs/heads/main.zip"
+    $ts = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
+    $zipUrl = "$REPO_URL/archive/refs/heads/main.zip?t=$ts"
     $tempZip = Join-Path $env:TEMP "antigravity_bridge_install.zip"
     $tempDir = Join-Path $env:TEMP "antigravity_bridge_extracted"
 
-    if (Test-Path $tempDir) { Remove-Item -Recurse -Force $tempDir }
+    if (Test-Path $tempZip) { Remove-Item -Force $tempZip -ErrorAction SilentlyContinue }
+    if (Test-Path $tempDir) { Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue }
     Invoke-WebRequest -Uri $zipUrl -OutFile $tempZip
     Expand-Archive -Path $tempZip -DestinationPath $tempDir -Force
 
@@ -58,7 +60,7 @@ if ($hasGit) {
     $pkgDir = if ($subFolders.Count -gt 0) { $subFolders[0].FullName } else { $tempDir }
 
     Write-Host "[INFO] Installing package via pip..." -ForegroundColor Yellow
-    & $PythonExe -m pip install --upgrade $pkgDir
+    & $PythonExe -m pip install --upgrade --force-reinstall --no-cache-dir $pkgDir
 
     # Clean up temp files
     Remove-Item -Force $tempZip -ErrorAction SilentlyContinue
