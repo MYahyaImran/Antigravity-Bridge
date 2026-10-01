@@ -190,8 +190,14 @@ async def auth_login(request: Request):
     host = request.headers.get("host", f"127.0.0.1:{DEFAULT_PORT}")
     scheme = request.url.scheme or "http"
     redirect_uri = f"{scheme}://{host}/auth/callback"
-    auth_url = account_manager.get_authorization_url(redirect_uri)
-    return RedirectResponse(url=auth_url)
+    try:
+        auth_url = account_manager.get_authorization_url(redirect_uri)
+        return RedirectResponse(url=auth_url)
+    except Exception as e:
+        return HTMLResponse(
+            content=f"<h2>Google OAuth Authorization Error</h2><p>{e}</p><br><a href='/'>Back to Dashboard</a>",
+            status_code=400,
+        )
 
 
 @app.get("/auth/callback")

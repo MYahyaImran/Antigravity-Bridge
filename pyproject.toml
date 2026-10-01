@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "antigravity-bridge"
-version = "1.0.2"
+version = "1.0.3"
 description = "Multi-account Google Antigravity bridge with zero-drop quota rotation and agent adapters"
 readme = "README.md"
 requires-python = ">=3.9"
