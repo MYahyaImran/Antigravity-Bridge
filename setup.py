@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="antigravity-bridge",
-    version="1.0.1",
+    version="1.0.2",
     description="Multi-account Google Antigravity bridge with zero-drop quota rotation and agent adapters",
     author="Antigravity Bridge Team",
     url="https://github.com/MYahyaImran/Antigravity-Bridge",
