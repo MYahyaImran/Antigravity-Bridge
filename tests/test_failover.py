@@ -80,9 +80,9 @@ class TestFailover(unittest.IsolatedAsyncioTestCase):
         text = chunks[0]["response"]["candidates"][0]["content"]["parts"][0]["text"]
         self.assertEqual(text, "Success from Account 2!")
 
-        # 2. Account 1 was marked exhausted
-        self.assertEqual(acc1.status, "exhausted")
-        self.assertGreater(acc1.exhausted_until, time.time())
+        # 2. Account 1 was placed on cooldown (since quota fraction was healthy 95%)
+        self.assertTrue(acc1.is_exhausted("gemini"))
+        self.assertTrue(acc1.is_cooling_down("gemini"))
 
         # 3. Account 2 was kept active and updated last_used
         self.assertEqual(acc2.status, "active")

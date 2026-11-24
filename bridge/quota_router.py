@@ -171,7 +171,7 @@ class QuotaRouter:
         for acc in all_accounts:
             if acc.status == "error":
                 continue
-            if acc.is_exhausted():
+            if acc.is_exhausted(model_group):
                 continue
 
             fraction, _ = self.get_account_quota_fraction(acc, model_group)
@@ -280,16 +280,31 @@ class QuotaRouter:
                 )
 
                 if is_quota_err:
-                    logger.warning(
-                        "Quota reached on account %s for model '%s': %s. Marking exhausted and failing over...",
-                        account.email,
-                        model,
-                        err_str,
-                    )
-                    account.status = "exhausted"
-                    # Try to parse reset_time or default cooldown to 30 mins
-                    _, reset_ts = self.get_account_quota_fraction(account, model_group)
-                    account.exhausted_until = reset_ts or (time.time() + 1800)
+                    fraction, reset_ts = self.get_account_quota_fraction(account, model_group)
+                    if fraction <= 0.001:
+                        # Genuine quota exhaustion: lockout until upstream reset time
+                        logger.warning(
+                            "Account %s genuinely depleted quota for group '%s' (remaining=%.3f). Marking exhausted until reset.",
+                            account.email,
+                            model_group,
+                            fraction,
+                        )
+                        account.status = "exhausted"
+                        account.exhausted_until = reset_ts or (time.time() + 1800)
+                    else:
+                        # Transient 429 rate limit or concurrency throttle (user still has >0.1% quota!)
+                        logger.warning(
+                            "Transient 429/rate-limit on account %s for model '%s' (quota remaining: %.1f%%). Setting short 45s cooldown on '%s' group.",
+                            account.email,
+                            model,
+                            fraction * 100,
+                            model_group,
+                        )
+                        account.set_group_cooldown(model_group, duration_seconds=45.0)
+                        if account.status == "exhausted":
+                            account.status = "active"
+                            account.exhausted_until = 0
+
                     self.account_manager.save()
                     last_error = e
                     # Loop will proceed to next candidate account!

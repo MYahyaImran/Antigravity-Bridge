@@ -40,6 +40,7 @@ class Account:
         quota_updated_at: float = 0,
         status: str = "active",
         exhausted_until: float = 0,
+        cooldowns: Optional[Dict[str, float]] = None,
     ):
         self.email = email
         self.refresh_token = refresh_token
@@ -54,6 +55,7 @@ class Account:
         self.quota_updated_at = quota_updated_at
         self.status = status
         self.exhausted_until = exhausted_until
+        self.cooldowns = cooldowns or {}
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -70,6 +72,7 @@ class Account:
             "quota_updated_at": self.quota_updated_at,
             "status": self.status,
             "exhausted_until": self.exhausted_until,
+            "cooldowns": self.cooldowns,
         }
 
     @classmethod
@@ -88,19 +91,39 @@ class Account:
             quota_updated_at=data.get("quota_updated_at", 0),
             status=data.get("status", "active"),
             exhausted_until=data.get("exhausted_until", 0),
+            cooldowns=data.get("cooldowns", {}),
         )
 
     def is_token_expired(self) -> bool:
         # Buffer of 120 seconds
         return time.time() >= (self.token_expiry - 120)
 
-    def is_exhausted(self) -> bool:
-        if self.exhausted_until > time.time():
+    def is_cooling_down(self, group: Optional[str] = None) -> bool:
+        now = time.time()
+        if not self.cooldowns:
+            return False
+        if group:
+            return self.cooldowns.get(group, 0) > now
+        return any(expiry > now for expiry in self.cooldowns.values())
+
+    def set_group_cooldown(self, group: str, duration_seconds: float = 45.0):
+        if not self.cooldowns:
+            self.cooldowns = {}
+        self.cooldowns[group] = time.time() + duration_seconds
+
+    def clear_cooldowns(self):
+        self.cooldowns = {}
+
+    def is_exhausted(self, model_group: Optional[str] = None) -> bool:
+        now = time.time()
+        if self.exhausted_until > now:
             return True
-        if self.status == "exhausted" and self.exhausted_until <= time.time():
+        if self.status == "exhausted" and self.exhausted_until <= now:
             self.status = "active"
             self.exhausted_until = 0
             return False
+        if model_group and self.is_cooling_down(model_group):
+            return True
         return self.status == "exhausted"
 
 

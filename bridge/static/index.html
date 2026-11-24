@@ -744,12 +744,24 @@ aider --model openai/gemini-3.8-flash-high</pre>
       container.innerHTML = accounts.map(acc => {
         const initials = (acc.name || acc.email).substring(0, 2).toUpperCase();
         const isExhausted = acc.status === 'exhausted';
+        const nowSec = Date.now() / 1000;
+        let isCooling = false;
+        if (acc.cooldowns) {
+          for (const k in acc.cooldowns) {
+            if (acc.cooldowns[k] > nowSec) {
+              isCooling = true;
+              break;
+            }
+          }
+        }
         
         let statusBadge = '<span class="badge badge-success">Active</span>';
         if (isExhausted) {
           statusBadge = '<span class="badge badge-danger">Quota Depleted</span>';
         } else if (!acc.enabled) {
           statusBadge = '<span class="badge badge-warning">Disabled</span>';
+        } else if (isCooling) {
+          statusBadge = '<span class="badge badge-warning">Cooling Down</span>';
         }
 
         // Calculate fractions

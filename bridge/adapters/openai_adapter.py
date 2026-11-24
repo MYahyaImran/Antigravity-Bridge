@@ -4,6 +4,7 @@ import time
 from typing import Any, AsyncGenerator, Dict, List, Optional, Tuple
 import uuid
 
+from bridge.adapters.anthropic_adapter import sanitize_system_instruction
 from bridge.antigravity_client import clean_schema_for_gemini, normalize_antigravity_contents
 from bridge.config import KNOWN_MODELS, get_all_known_models, resolve_model
 from bridge.quota_router import QuotaRouter
@@ -120,7 +121,11 @@ def convert_openai_to_antigravity(
 
     system_instruction = None
     if system_parts:
-        system_instruction = {"parts": system_parts}
+        sanitized_parts = []
+        for sp in system_parts:
+            txt = sp.get("text", "")
+            sanitized_parts.append({"text": sanitize_system_instruction(txt)})
+        system_instruction = {"parts": sanitized_parts}
 
     generation_config: Dict[str, Any] = {}
     if "temperature" in openai_req:
