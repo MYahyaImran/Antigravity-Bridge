@@ -286,7 +286,7 @@ class SetupManager:
         # Haiku: Gemini 3.8 Flash High (alias claude-haiku-4-5)
         if "gemini" in resolved_model.lower():
             env_block["ANTHROPIC_DEFAULT_SONNET_MODEL"] = "gemini-3.8-flash-high"
-            env_block["ANTHROPIC_DEFAULT_OPUS_MODEL"] = "gemini-3.1-pro-low"
+            env_block["ANTHROPIC_DEFAULT_OPUS_MODEL"] = "gemini-2.5-pro"
             env_block["ANTHROPIC_DEFAULT_HAIKU_MODEL"] = "gemini-3.8-flash-high"
             env_block["CLAUDE_CODE_SUBAGENT_MODEL"] = "gemini-3.8-flash-high"
         else:

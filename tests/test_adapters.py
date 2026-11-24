@@ -14,9 +14,11 @@ class TestAdapters(unittest.TestCase):
         self.assertEqual(resolve_model("claude-3-5-sonnet-latest"), "claude-sonnet-4-6")
         self.assertEqual(resolve_model("claude-3-7-sonnet-20250219"), "claude-sonnet-4-6")
         self.assertEqual(resolve_model("claude-3-opus-latest"), "claude-opus-4-6-thinking")
-        self.assertEqual(resolve_model("gemini-2.5-flash"), "gemini-3.8-flash-high")
-        self.assertEqual(resolve_model("gemini-2.5-pro"), "gemini-3.1-pro-low")
+        self.assertEqual(resolve_model("gemini-2.5-flash"), "gemini-2.5-flash")
+        self.assertEqual(resolve_model("gemini-2.5-pro"), "gemini-2.5-pro")
         self.assertEqual(resolve_model("gemini-3.8-flash-high"), "gemini-3.8-flash-high")
+        self.assertEqual(resolve_model("gemini-4-hydrogen-sonar"), "gemini-4-hydrogen-sonar")
+        self.assertEqual(resolve_model("sonar"), "gemini-4-hydrogen-sonar")
 
     def test_model_group(self):
         self.assertEqual(get_model_group("gemini-3.8-flash-high"), "gemini")

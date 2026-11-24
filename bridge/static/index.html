@@ -514,12 +514,14 @@
           <div class="chat-box">
             <div style="display: flex; gap: 8px;">
               <select id="model-select" style="width: 100%;">
+                <option value="gemini-4-hydrogen-sonar">Gemini 4 Hydrogen Sonar (Thinking & 1M Ctx)</option>
+                <option value="gemini-2.5-pro">Gemini 2.5 Pro (Deep Reasoning & 1M Ctx)</option>
                 <option value="gemini-3.8-flash-high">Gemini 3.8 Flash (High)</option>
-                <option value="gemini-3.7-flash-high">Gemini 3.7 Flash (High)</option>
+                <option value="gemini-3.5-flash-lite">Gemini 3.5 Flash Lite (Fast & Efficient)</option>
+                <option value="gemini-3-flash">Gemini 3 Flash</option>
                 <option value="claude-sonnet-4-6">Claude Sonnet 4.6 (Thinking)</option>
                 <option value="claude-opus-4-6-thinking">Claude Opus 4.6 (Thinking)</option>
                 <option value="gpt-oss-120b-medium">GPT-OSS 120B (Medium)</option>
-                <option value="gemini-3.1-pro-low">Gemini 3.1 Pro (Low)</option>
               </select>
             </div>
             <div id="chat-stream" class="chat-output">Click "Test Prompt" to test live streaming and failover...</div>
@@ -955,8 +957,10 @@ aider --model openai/gemini-3.8-flash-high</pre>
               <div style="display: flex; align-items: center; gap: 8px; margin-top: 6px; flex-wrap: wrap;">
                 <span style="font-size: 11px; color: var(--text-muted); font-weight: 500;">Active Model:</span>
                 <select id="model-select-${key}" style="background: rgba(20, 20, 30, 0.8); color: #f0f0f5; border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 6px; padding: 4px 8px; font-size: 11px; outline: none;">
+                  <option value="gemini-4-hydrogen-sonar" ${curModel.includes('sonar') || curModel.includes('hydrogen') || curModel.includes('gemini-4') ? 'selected' : ''}>🚀 Gemini 4 Hydrogen Sonar - Next-Gen & 1M Ctx</option>
+                  <option value="gemini-2.5-pro" ${curModel.includes('pro') ? 'selected' : ''}>🧠 Gemini 2.5 Pro - Deep Reasoning & 1M Ctx</option>
                   <option value="gemini-3.8-flash-high" ${curModel.includes('3.8-flash') || curModel.includes('haiku') ? 'selected' : ''}>⚡ Gemini 3.8 Flash (High) - Fast & 1M Ctx</option>
-                  <option value="gemini-3.1-pro-low" ${curModel.includes('pro') ? 'selected' : ''}>🧠 Gemini 3.1 Pro (Low) - Deep Reasoning & 2M Ctx</option>
+                  <option value="gemini-3.5-flash-lite" ${curModel.includes('lite') || curModel.includes('3.5') ? 'selected' : ''}>🏎️ Gemini 3.5 Flash Lite - Ultra Low Latency</option>
                   <option value="claude-sonnet-4-6" ${curModel.includes('sonnet') ? 'selected' : ''}>🎭 Claude Sonnet 4.6 (Thinking)</option>
                   <option value="claude-opus-4-6-thinking" ${curModel.includes('opus') ? 'selected' : ''}>👑 Claude Opus 4.6 (Thinking)</option>
                   <option value="gpt-oss-120b-medium" ${curModel.includes('oss') ? 'selected' : ''}>🤖 GPT-OSS 120B (Medium)</option>
@@ -973,7 +977,8 @@ aider --model openai/gemini-3.8-flash-high</pre>
                 <br>• <code>/model haiku</code> → <b>Gemini 3.8 Flash</b> (Native Claude UX, zero warnings)
                 <br>• <code>/model sonnet</code> → <b>Claude Sonnet 4.6</b>
                 <br>• <code>/model opus</code> → <b>Claude Opus 4.6 Thinking</b>
-                <br>• <code>/model gemini-pro</code> → <b>Gemini 3.1 Pro</b>
+                <br>• <code>/model sonar</code> → <b>Gemini 4 Hydrogen Sonar</b>
+                <br>• <code>/model gemini-pro</code> → <b>Gemini 2.5 Pro</b>
               </div>
             `;
           }

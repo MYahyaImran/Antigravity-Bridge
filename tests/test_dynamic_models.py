@@ -59,6 +59,14 @@ class TestDynamicModels(unittest.TestCase):
         self.assertEqual(resolve_model("gpt-4o"), "gemini-3.8-flash-high")
         self.assertEqual(resolve_model("claude-3-7-sonnet-latest"), "claude-sonnet-4-6")
         self.assertEqual(resolve_model("claude-3-5-sonnet-latest"), "claude-sonnet-4-6")
+        self.assertEqual(resolve_model("sonar"), "gemini-4-hydrogen-sonar")
+        self.assertEqual(resolve_model("hydrogen"), "gemini-4-hydrogen-sonar")
+        self.assertEqual(resolve_model("gemini-4"), "gemini-4-hydrogen-sonar")
+        self.assertEqual(resolve_model("gemini-pro"), "gemini-2.5-pro")
+        self.assertEqual(resolve_model("pro"), "gemini-2.5-pro")
+        self.assertEqual(resolve_model("gemini-3.5"), "gemini-3.5-flash-lite")
+        self.assertEqual(resolve_model("lite"), "gemini-3.5-flash-lite")
+        self.assertEqual(resolve_model("gemini-3"), "gemini-3-flash")
 
 
 if __name__ == "__main__":

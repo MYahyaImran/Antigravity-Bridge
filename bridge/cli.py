@@ -389,7 +389,8 @@ def cmd_setup(args):
         print("   /model haiku      -> Gemini 3.8 Flash (native, clean)")
         print("   /model sonnet     -> Claude Sonnet 4.6")
         print("   /model opus       -> Claude Opus 4.6 Thinking")
-        print("   /model gemini-pro -> Gemini 3.1 Pro\n")
+        print("   /model sonar      -> Gemini 4 Hydrogen Sonar")
+        print("   /model gemini-pro -> Gemini 2.5 Pro\n")
 
 
 def cmd_model(args):
@@ -403,7 +404,7 @@ def cmd_model(args):
     model_name = getattr(args, "model_name", None)
 
     # Support shorthand: 'apx model gemini' -> switches claude to gemini
-    if agent and not model_name and agent in ("gemini", "sonnet", "opus", "gemini-pro", "flash", "pro", "haiku"):
+    if agent and not model_name and agent in ("gemini", "sonnet", "opus", "gemini-pro", "flash", "pro", "haiku", "sonar", "hydrogen", "lite", "gemini-4"):
         model_name = agent
         agent = "claude"
 
@@ -421,7 +422,8 @@ def cmd_model(args):
 
         print("\nQuick Model Switch Commands:")
         print("  apx model claude gemini       -> Switch Claude Code to Gemini 3.8 Flash")
-        print("  apx model claude gemini-pro   -> Switch Claude Code to Gemini 3.1 Pro")
+        print("  apx model claude gemini-pro   -> Switch Claude Code to Gemini 2.5 Pro")
+        print("  apx model claude sonar        -> Switch Claude Code to Gemini 4 Hydrogen Sonar")
         print("  apx model claude sonnet       -> Switch Claude Code to Claude Sonnet 4.6")
         print("  apx model claude opus         -> Switch Claude Code to Claude Opus 4.6")
         print("  apx model cursor gemini       -> Switch Cursor to Gemini 3.8 Flash")
@@ -430,6 +432,8 @@ def cmd_model(args):
         print("  /model haiku        -> Uses Gemini 3.8 Flash (native, clean)")
         print("  /model sonnet       -> Uses Claude Sonnet 4.6")
         print("  /model opus         -> Uses Claude Opus 4.6 Thinking")
+        print("  /model sonar        -> Uses Gemini 4 Hydrogen Sonar")
+        print("  /model gemini-pro   -> Uses Gemini 2.5 Pro")
         print("  /model gemini       -> Uses Gemini 3.8 Flash directly\n")
         return
 
@@ -442,7 +446,7 @@ def cmd_model(args):
         cur_model = info.get("current_model", "gemini-3.8-flash-high")
         print(f"\n{agent.capitalize()} is currently configured to use: {cur_model}")
         print(f"To change it: apx model {agent} <model_name>")
-        print("Available models: gemini, gemini-pro, sonnet, opus\n")
+        print("Available models: gemini, gemini-pro, sonar, sonnet, opus, lite\n")
         return
 
     print(f"\nConfiguring {agent} model -> {model_name}...")
@@ -464,7 +468,8 @@ def cmd_model(args):
         print("   /model haiku      (Gemini 3.8 Flash)")
         print("   /model sonnet     (Claude Sonnet 4.6)")
         print("   /model opus       (Claude Opus 4.6 Thinking)")
-        print("   /model gemini-pro (Gemini 3.1 Pro)\n")
+        print("   /model sonar      (Gemini 4 Hydrogen Sonar)")
+        print("   /model gemini-pro (Gemini 2.5 Pro)\n")
 
 
 def cmd_restart(args):
@@ -557,14 +562,14 @@ def main():
     # setup
     setup_parser = subparsers.add_parser("setup", help="Auto-configure Claude Code, Hermes, Aider, Cursor & Environment")
     setup_parser.add_argument("target", nargs="?", default="all", choices=["all", "claude", "hermes", "aider", "cursor", "env"], help="Target agent to configure (default: all)")
-    setup_parser.add_argument("--model", "-m", default=None, help="Model to configure for the agent (e.g. gemini, sonnet, opus, gemini-pro)")
+    setup_parser.add_argument("--model", "-m", default=None, help="Model to configure for the agent (e.g. gemini, gemini-pro, sonar, sonnet, opus)")
     setup_parser.add_argument("--port", type=int, default=None, help="Bridge server port to target")
     setup_parser.add_argument("--revert", action="store_true", help="Revert configurations from backup")
 
     # model
     model_parser = subparsers.add_parser("model", help="View or switch active model for an agent (e.g. 'apx model claude gemini')")
     model_parser.add_argument("agent", nargs="?", default=None, help="Agent to configure (claude, cursor, hermes, aider) or model alias")
-    model_parser.add_argument("model_name", nargs="?", default=None, help="Model name or alias to switch to (e.g. gemini, sonnet, opus, gemini-pro)")
+    model_parser.add_argument("model_name", nargs="?", default=None, help="Model name or alias to switch to (e.g. gemini, gemini-pro, sonar, sonnet, opus)")
     model_parser.add_argument("--port", type=int, default=None, help="Bridge server port to target")
 
     # test

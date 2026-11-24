@@ -15,11 +15,6 @@ ACCOUNTS_FILE = DATA_DIR / "accounts.json"
 CREDENTIALS_FILE = DATA_DIR / "credentials.json"
 
 
-_XOR_KEY = 0x5A
-_DEFAULT_CLIENT_ID_BYTES = bytes([107, 106, 109, 107, 106, 106, 108, 106, 108, 106, 111, 99, 107, 119, 46, 55, 50, 41, 41, 51, 52, 104, 50, 104, 107, 54, 57, 40, 63, 104, 105, 111, 44, 46, 53, 54, 53, 48, 50, 110, 61, 110, 106, 105, 63, 42, 116, 59, 42, 42, 41, 116, 61, 53, 53, 61, 54, 63, 47, 41, 63, 40, 57, 53, 52, 46, 63, 52, 46, 116, 57, 53, 55])
-_DEFAULT_CLIENT_SECRET_BYTES = bytes([29, 21, 25, 9, 10, 2, 119, 17, 111, 98, 28, 13, 8, 110, 98, 108, 22, 62, 22, 16, 107, 55, 22, 24, 98, 41, 2, 25, 110, 32, 108, 43, 30, 27, 60])
-
-
 def _load_oauth_credentials() -> tuple[str, str]:
     """
     Load Google Antigravity OAuth client credentials.
@@ -27,7 +22,6 @@ def _load_oauth_credentials() -> tuple[str, str]:
     1. Environment variables (ANTIGRAVITY_CLIENT_ID, ANTIGRAVITY_CLIENT_SECRET)
     2. User credentials file (~/.antigravity-bridge/credentials.json)
     3. Project root .env file
-    4. Built-in Antigravity Desktop Client credentials
     """
     client_id = os.environ.get("ANTIGRAVITY_CLIENT_ID", "").strip()
     client_secret = os.environ.get("ANTIGRAVITY_CLIENT_SECRET", "").strip()
@@ -67,18 +61,6 @@ def _load_oauth_credentials() -> tuple[str, str]:
         except Exception:
             pass
 
-    # Fallback to official Google Antigravity Desktop Client credentials
-    if not client_id:
-        try:
-            client_id = bytes([b ^ _XOR_KEY for b in _DEFAULT_CLIENT_ID_BYTES]).decode("utf-8")
-        except Exception:
-            pass
-    if not client_secret:
-        try:
-            client_secret = bytes([b ^ _XOR_KEY for b in _DEFAULT_CLIENT_SECRET_BYTES]).decode("utf-8")
-        except Exception:
-            pass
-
     return client_id, client_secret
 
 
@@ -107,6 +89,21 @@ AUTO_FALLBACK_TO_GEMINI = os.environ.get("BRIDGE_AUTO_FALLBACK", "true").lower()
 
 # Supported Antigravity models
 KNOWN_MODELS = [
+    # Flagship Experimental & Next-Gen
+    {
+        "id": "gemini-4-hydrogen-sonar",
+        "name": "Gemini 4 Hydrogen Sonar",
+        "group": "gemini",
+        "context_window": 1048576,
+    },
+    # Reasoning & Flagship Pro
+    {
+        "id": "gemini-2.5-pro",
+        "name": "Gemini 2.5 Pro",
+        "group": "gemini",
+        "context_window": 1048576,
+    },
+    # High-Performance Flash Tier
     {
         "id": "gemini-3.8-flash-high",
         "name": "Gemini 3.8 Flash (High)",
@@ -126,26 +123,90 @@ KNOWN_MODELS = [
         "context_window": 1048576,
     },
     {
+        "id": "gemini-3.8-flash-tiered",
+        "name": "Gemini 3.8 Flash (Tiered)",
+        "group": "gemini",
+        "context_window": 1048576,
+    },
+    # Ultra-Fast / Flash-Lite Tier
+    {
+        "id": "gemini-3.5-flash-lite",
+        "name": "Gemini 3.5 Flash Lite",
+        "group": "gemini",
+        "context_window": 1048576,
+    },
+    {
+        "id": "gemini-3-flash",
+        "name": "Gemini 3 Flash",
+        "group": "gemini",
+        "context_window": 1048576,
+    },
+    {
+        "id": "gemini-3.1-flash-lite",
+        "name": "Gemini 3.1 Flash Lite",
+        "group": "gemini",
+        "context_window": 1048576,
+    },
+    {
+        "id": "gemini-3.1-flash-image",
+        "name": "Gemini 3.1 Flash Image",
+        "group": "gemini",
+        "context_window": 65536,
+    },
+    {
+        "id": "gemini-2.5-flash",
+        "name": "Gemini 2.5 Flash",
+        "group": "gemini",
+        "context_window": 1048576,
+    },
+    {
+        "id": "gemini-2.5-flash-lite",
+        "name": "Gemini 2.5 Flash Lite",
+        "group": "gemini",
+        "context_window": 1048576,
+    },
+    {
+        "id": "gemini-2.5-flash-thinking",
+        "name": "Gemini 2.5 Flash Thinking",
+        "group": "gemini",
+        "context_window": 1048576,
+    },
+    # 3P Models
+    {
+        "id": "claude-sonnet-4-6",
+        "name": "Claude Sonnet 4.6 (Thinking)",
+        "group": "3p",
+        "context_window": 250000,
+    },
+    {
+        "id": "claude-opus-4-6-thinking",
+        "name": "Claude Opus 4.6 (Thinking)",
+        "group": "3p",
+        "context_window": 250000,
+    },
+    {
+        "id": "gpt-oss-120b-medium",
+        "name": "GPT-OSS 120B (Medium)",
+        "group": "3p",
+        "context_window": 131072,
+    },
+    # Specialized Autocomplete / Preview
+    {
+        "id": "tab_flash_lite_preview",
+        "name": "Tab Flash Lite Preview",
+        "group": "gemini",
+        "context_window": 16384,
+    },
+    {
+        "id": "tab_jump_flash_lite_preview",
+        "name": "Tab Jump Flash Lite Preview",
+        "group": "gemini",
+        "context_window": 16384,
+    },
+    # Legacy fallbacks
+    {
         "id": "gemini-3.7-flash-high",
         "name": "Gemini 3.7 Flash (High)",
-        "group": "gemini",
-        "context_window": 1048576,
-    },
-    {
-        "id": "gemini-3.7-flash-medium",
-        "name": "Gemini 3.7 Flash (Medium)",
-        "group": "gemini",
-        "context_window": 1048576,
-    },
-    {
-        "id": "gemini-3.7-flash-low",
-        "name": "Gemini 3.7 Flash (Low)",
-        "group": "gemini",
-        "context_window": 1048576,
-    },
-    {
-        "id": "gemini-3.6-flash-high",
-        "name": "Gemini 3.6 Flash (High)",
         "group": "gemini",
         "context_window": 1048576,
     },
@@ -154,24 +215,6 @@ KNOWN_MODELS = [
         "name": "Gemini 3.1 Pro (Low)",
         "group": "gemini",
         "context_window": 2097152,
-    },
-    {
-        "id": "claude-sonnet-4-6",
-        "name": "Claude Sonnet 4.6 (Thinking)",
-        "group": "3p",
-        "context_window": 200000,
-    },
-    {
-        "id": "claude-opus-4-6-thinking",
-        "name": "Claude Opus 4.6 (Thinking)",
-        "group": "3p",
-        "context_window": 200000,
-    },
-    {
-        "id": "gpt-oss-120b-medium",
-        "name": "GPT-OSS 120B (Medium)",
-        "group": "3p",
-        "context_window": 128000,
     },
 ]
 
@@ -193,19 +236,36 @@ MODEL_ALIASES = {
     
     # OpenAI GPT aliases
     "gpt-4o": "gemini-3.8-flash-high",
-    "gpt-4o-mini": "gemini-3.7-flash-high",
+    "gpt-4o-mini": "gemini-3.5-flash-lite",
     "gpt-4-turbo": "gemini-3.8-flash-high",
     "gpt-4": "gemini-3.8-flash-high",
     "o1": "claude-opus-4-6-thinking",
     "o3-mini": "gemini-3.8-flash-high",
     "chatgpt-4o-latest": "gemini-3.8-flash-high",
     
-    # Gemini aliases
-    "gemini-2.5-flash": "gemini-3.8-flash-high",
-    "gemini-2.5-pro": "gemini-3.1-pro-low",
+    # Gemini aliases & Next-Gen
+    "gemini-4": "gemini-4-hydrogen-sonar",
+    "gemini-4-sonar": "gemini-4-hydrogen-sonar",
+    "gemini-4-hydrogen": "gemini-4-hydrogen-sonar",
+    "hydrogen": "gemini-4-hydrogen-sonar",
+    "sonar": "gemini-4-hydrogen-sonar",
+    "gemini-2.5-pro": "gemini-2.5-pro",
+    "gemini-pro": "gemini-2.5-pro",
+    "gemini-pro-latest": "gemini-2.5-pro",
+    "gemini-1.5-pro": "gemini-2.5-pro",
+    "gemini-3.1-pro-low": "gemini-2.5-pro",
+    "gemini-2.5-flash": "gemini-2.5-flash",
     "gemini-2.0-flash": "gemini-3.8-flash-high",
-    "gemini-1.5-pro": "gemini-3.1-pro-low",
-    "gemini-1.5-flash": "gemini-3.7-flash-high",
+    "gemini-1.5-flash": "gemini-3.5-flash-lite",
+    "gemini-3.5": "gemini-3.5-flash-lite",
+    "gemini-3.5-flash": "gemini-3.5-flash-lite",
+    "flash-lite": "gemini-3.5-flash-lite",
+    "gemini-flash-lite": "gemini-3.5-flash-lite",
+    "gemini-3": "gemini-3-flash",
+    "gemini-3-flash": "gemini-3-flash",
+    "gemini-3.1": "gemini-3.1-flash-lite",
+    "gemini-3.8": "gemini-3.8-flash-high",
+    "gemini-3.7": "gemini-3.7-flash-high",
     
     # Quick /model command aliases for Claude Code & agents
     "haiku": "gemini-3.8-flash-high",
@@ -214,12 +274,8 @@ MODEL_ALIASES = {
     "claude-opus-4-6": "claude-opus-4-6-thinking",
     "gemini": "gemini-3.8-flash-high",
     "gemini-flash": "gemini-3.8-flash-high",
-    "gemini-pro": "gemini-3.1-pro-low",
     "flash": "gemini-3.8-flash-high",
-    "pro": "gemini-3.1-pro-low",
-    "gemini-3.8": "gemini-3.8-flash-high",
-    "gemini-3.7": "gemini-3.7-flash-high",
-    "gemini-3.1": "gemini-3.1-pro-low",
+    "pro": "gemini-2.5-pro",
     
     # Generic
     "default": "gemini-3.8-flash-high",
@@ -269,6 +325,13 @@ def register_discovered_models(models_dict: Dict[str, Any]) -> List[Dict[str, An
             parts = lower_id.split("-")
             if len(parts) >= 2:
                 _DYNAMIC_ALIASES[parts[0] + "-" + parts[1]] = model_id
+        if "pro" in lower_id and "gemini" in lower_id:
+            _DYNAMIC_ALIASES["gemini-pro"] = model_id
+            _DYNAMIC_ALIASES["pro"] = model_id
+        if "sonar" in lower_id or "hydrogen" in lower_id:
+            _DYNAMIC_ALIASES["sonar"] = model_id
+            _DYNAMIC_ALIASES["hydrogen"] = model_id
+            _DYNAMIC_ALIASES["gemini-4"] = model_id
 
     return registered
 
@@ -315,6 +378,8 @@ def resolve_model(model_name: str) -> str:
         return MODEL_ALIASES[clean]
         
     # Heuristic matches
+    if "sonar" in clean or "hydrogen" in clean or "gemini-4" in clean:
+        return "gemini-4-hydrogen-sonar"
     if "opus" in clean:
         return "claude-opus-4-6-thinking"
     if "claude" in clean or "sonnet" in clean:
@@ -322,7 +387,9 @@ def resolve_model(model_name: str) -> str:
     if "oss" in clean:
         return "gpt-oss-120b-medium"
     if "pro" in clean:
-        return "gemini-3.1-pro-low"
+        return "gemini-2.5-pro"
+    if "lite" in clean:
+        return "gemini-3.5-flash-lite"
     if "flash" in clean or "gemini" in clean:
         return "gemini-3.8-flash-high"
         
@@ -338,6 +405,6 @@ def get_model_group(model_id: str) -> str:
     for m in KNOWN_MODELS:
         if m["id"] == resolved:
             return m.get("group", "gemini")
-    if "claude" in resolved or "gpt-oss" in resolved:
+    if "claude" in resolved or "gpt" in resolved:
         return "3p"
     return "gemini"

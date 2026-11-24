@@ -54,6 +54,7 @@ class TestSetupManager(unittest.TestCase):
             data_gem = json.loads(self.claude_path.read_text(encoding="utf-8"))
             self.assertEqual(data_gem["model"], "gemini-3.8-flash-high")
             self.assertEqual(data_gem["env"]["ANTHROPIC_DEFAULT_MODEL"], "gemini-3.8-flash-high")
+            self.assertEqual(data_gem["env"]["ANTHROPIC_DEFAULT_OPUS_MODEL"], "gemini-2.5-pro")
             self.assertNotIn("ANTHROPIC_MODEL", data_gem["env"])
 
     def test_configure_hermes(self):
