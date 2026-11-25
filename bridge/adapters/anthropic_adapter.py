@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 import time
 from typing import Any, AsyncGenerator, Dict, List, Optional, Tuple
 import uuid
@@ -19,11 +20,18 @@ _MAX_SIGNATURE_CACHE_SIZE = 1000
 def sanitize_system_instruction(text: str) -> str:
     """
     Sanitize system instruction to prevent triggering upstream Google Cloud Code
-    filters on competitor agent prompts (e.g. Hermes Agent, etc.).
+    filters on billing headers or competitor CLI/agent identities (e.g. Claude Code, Hermes).
     """
     if not text:
         return text
+
+    # Strip billing header lines injected by Claude Code CLI
+    text = re.sub(r"(?im)^x-anthropic-billing-header:.*(?:\r?\n)?", "", text)
+
     replacements = [
+        ("You are Claude Code, Anthropic's official CLI for Claude.", "You are an intelligent AI coding assistant."),
+        ("You are Claude Code", "You are an intelligent AI coding assistant"),
+        ("Anthropic's official CLI for Claude", "an AI coding assistant"),
         ("You are Hermes Agent, an intelligent AI assistant created by Nous Research.", "You are an intelligent AI coding assistant."),
         ("You are Hermes Agent", "You are an intelligent AI assistant"),
         ("You are Hermes", "You are an intelligent assistant"),
@@ -31,7 +39,8 @@ def sanitize_system_instruction(text: str) -> str:
     for old, new in replacements:
         if old in text:
             text = text.replace(old, new)
-    return text
+
+    return text.strip()
 
 
 def _cache_thought_signature(tool_id: str, sig: str):

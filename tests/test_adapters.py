@@ -69,7 +69,15 @@ class TestAdapters(unittest.TestCase):
 
         self.assertEqual(model, "claude-sonnet-4-6")
         self.assertIsNotNone(sys_inst)
-        self.assertEqual(sys_inst["parts"][0]["text"], "You are Claude Code.")
+        self.assertEqual(sys_inst["parts"][0]["text"], "You are an intelligent AI coding assistant.")
+
+        # Verify billing header stripping
+        req_with_header = dict(req)
+        req_with_header["system"] = "x-anthropic-billing-header: cc_version=2.1.248; cc_entrypoint=cli;\nYou are Claude Code, Anthropic's official CLI for Claude.\nBe concise."
+        _, _, sys_inst2, _, _ = convert_anthropic_to_antigravity(req_with_header)
+        self.assertNotIn("x-anthropic-billing-header", sys_inst2["parts"][0]["text"])
+        self.assertNotIn("Claude Code", sys_inst2["parts"][0]["text"])
+        self.assertIn("Be concise.", sys_inst2["parts"][0]["text"])
         self.assertEqual(len(contents), 3)
         self.assertEqual(contents[0]["role"], "user")
         self.assertEqual(contents[1]["role"], "model")
